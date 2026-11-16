@@ -23,8 +23,11 @@ public class FinalTry {
 
             // OPCIÓN 1: REGISTRO
             if (opcion == 1) {
-                totalUsuarios = registrarUsuario(scanner, usuarios, totalUsuarios);
-                userActivo = usuarios[totalUsuarios - 1][0];                                     // SE LOGUEA DIRECTO POR LA VARIABLE USERACTIVO
+                int nuevoTotal = registrarUsuario(scanner, usuarios, totalUsuarios);
+                if (nuevoTotal != totalUsuarios) {
+                    userActivo = usuarios[totalUsuarios][0];                                     // SE LOGUEA DIRECTO POR LA VARIABLE USERACTIVO SI EL REGISTRO FUE EXITOSO
+                    totalUsuarios = nuevoTotal;
+                }
 
             // OPCIÓN 2: INICIAR SESIÓN
             } else if (opcion == 2) {
@@ -62,15 +65,23 @@ public class FinalTry {
     }
     
     
-    //REGISTRO DE USUARIO
+    //REGISTRO DE USUARIO (CON VALIDACIÓN DE DUPLICADOS)
     public static int registrarUsuario(Scanner scanner, String[][] usuarios, int totalUsuarios) {
         System.out.print("NOMBRE DE USUARIO: ");
-        usuarios[totalUsuarios][0] = scanner.nextLine();
+        String nombreIngresado = scanner.nextLine();
+
+        // COMPROBAMOS SI EL USUARIO YA EXISTE
+        if (existeUsuario(usuarios, totalUsuarios, nombreIngresado)) {
+            System.out.println("-> ERROR: YA EXISTE UN USUARIO CON ESE NOMBRE.");
+            return totalUsuarios; 																					// DEVUELVE EL MISMO TOTAL DE USUARIOS, NO SE INCREMENTA
+        }
+
+        usuarios[totalUsuarios][0] = nombreIngresado;
         System.out.print("CONTRASEÑA: ");
         usuarios[totalUsuarios][1] = scanner.nextLine();
         
         System.out.println("->REGISTRO CORRECTO, BIENVENID@ " + usuarios[totalUsuarios][0] + "!");
-        return totalUsuarios + 1; // Devuelve el nuevo total incrementado
+        return totalUsuarios + 1; 																					// DEVUELVE EL NUEVO TOTAL INCREMENTADO
     }
 
     
@@ -233,5 +244,15 @@ public class FinalTry {
             }
         }
         return -1; 																	// TE DEVUELVE -1 SI NO ENCUENTRA NINGUNA SALA CON ESE CODIGO
+    }
+
+    // --- BUSCAR USUARIOS DUPLICADOS ---
+    public static boolean existeUsuario(String[][] usuarios, int totalUsuarios, String nombreBuscado) {
+        for (int i = 0; i < totalUsuarios; i++) {
+            if (usuarios[i][0].equalsIgnoreCase(nombreBuscado)) {
+                return true; // Ya existe un usuario con ese nombre
+            }
+        }
+        return false; // El nombre está libre
     }
 }
